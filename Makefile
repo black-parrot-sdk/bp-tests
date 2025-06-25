@@ -7,7 +7,7 @@ include Makefile.frag
 RISCV_GCC           = $(CROSS_COMPILE)gcc
 RISCV_GPP           = $(CROSS_COMPILE)g++
 RISCV_GCC_OPTS      = -march=$(WITH_MARCH) -mabi=$(WITH_MABI)
-RISCV_LINK_OPTS     = --specs=dramfs.specs --specs=perch.specs
+RISCV_LINK_OPTS     = --specs=perch.specs
 
 .PHONY: all
 
