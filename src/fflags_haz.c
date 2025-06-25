@@ -12,7 +12,6 @@ void main(uint64_t argc, char * argv[]) {
    double res;
    __asm__ __volatile__ ("fdiv.d %0, %1, %2" : "=f"(res) : "f"(one), "f"(zero));
    __asm__ __volatile__ ("csrr %0, fflags" : "=r"(fflags) : );
-   printf("%f %d\n", res, fflags);
    if (fflags == 0) bp_finish(1);
 
    bp_finish(0);
