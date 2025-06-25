@@ -56,5 +56,7 @@ typedef struct
   long hartid;
 } trapframe_t;
 
+void* memset(void*, int, size_t);
+
 #endif
 
