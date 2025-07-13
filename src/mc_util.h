@@ -10,6 +10,8 @@
 #ifndef MC_UTIL_H
 #define MC_UTIL_H
 
+#include <stddef.h>
+
 // Random Number Generator
 // Source: stackoverflow.com/questions/7602919/how-do-i-generate-random-numbers-without-rand-function
 uint16_t mc_rand() {
@@ -64,6 +66,12 @@ void sync_barrier(volatile uint64_t *barrier_addr, uint64_t entry) {
     // compute the value required in the barrier, based on how many syncs have been called
     uint64_t expected = num_cores * entry;
     while (*barrier_addr != expected) { };
+}
+
+// secondary harts enter here
+uint64_t main(uint64_t argc, char * argv[]);
+void __main(void) {
+    main(0, NULL);
 }
 
 #endif
