@@ -6,20 +6,16 @@
 // number of iterations for each core to run the main loop
 #define N 500
 
-volatile uint64_t barrier_mem __attribute__((aligned(64))) = 0;
-volatile uint64_t amo_target __attribute__ ((aligned (64))) = 0;
+volatile uint64_t __attribute__((aligned(64))) amo_target = 0;
+volatile uint64_t __attribute__((aligned(64))) global_lock = 0;
+volatile uint64_t __attribute__((aligned(64))) start_barrier_mem = 0;
+volatile uint64_t __attribute__((aligned(64))) end_barrier_mem = 0;
 
-uint64_t main(uint64_t argc, char * argv[]) {
-
+void thread_main(void) {
   int iters = N;
   uint64_t sc_result = 0;
   uint64_t sc_load = 0;
   int i = 0;
-
-  uint64_t barrier_entry = 1;
-
-  sync_barrier(&barrier_mem, barrier_entry);
-  barrier_entry++;
 
   // main loop
   // Execute LR/SC that performs amo_add.d of 1 to amo_target
@@ -37,12 +33,43 @@ uint64_t main(uint64_t argc, char * argv[]) {
     : [amo_addr] "r" (&amo_target), [iters] "r" (iters)
     :
     );
-
-  // all cores synchronize at end
-  sync_barrier(&barrier_mem, barrier_entry);
-  barrier_entry++;
-
-  uint32_t num_cores = bp_param_get(PARAM_CC_X_DIM) * bp_param_get(PARAM_CC_Y_DIM);
-  uint64_t total = num_cores * N;
-  return (amo_target != total);
+  lock(&global_lock);
+  end_barrier_mem += 1;
+  unlock(&global_lock);
 }
+
+uint64_t main(uint64_t argc, char * argv[]) {
+  uint64_t core_id;
+  __asm__ volatile("csrr %0, mhartid": "=r"(core_id): :);
+  uint32_t num_cores = bp_param_get(PARAM_CC_X_DIM) * bp_param_get(PARAM_CC_Y_DIM);
+
+  // only core 0 intializes data structures
+  if (core_id == 0) {
+    global_lock = 0;
+
+	amo_target = 0;
+
+    // signal done with initialization
+    start_barrier_mem = 0xdeadbeef;
+  }
+  else {
+    while (start_barrier_mem != 0xdeadbeef) { }
+  }
+
+  thread_main();
+
+  if (core_id == 0) {
+    // core 0 waits for all threads to finish
+    // wait for all threads to finish
+    while (end_barrier_mem != num_cores) { }
+    return 0;
+  } else {
+    // all other cores call finish (0 = pass, 1 = fail) ...
+    // ... then busy-wait for core 0 to terminate the execution
+    while (1) { }
+  }
+
+  // no core should reach this, return non-zero (error)
+  return 1;
+}
+
