@@ -76,13 +76,6 @@ uint64_t main(uint64_t argc, char * argv[]) {
       return 1;
     }
     return 0;
-  } else {
-    if (sum != (uint64_t)N) {
-      bp_finish(1);
-    } else {
-      bp_finish(0);
-    }
-    while (1) { }
   }
 
   // no core should reach this, return non-zero (error)

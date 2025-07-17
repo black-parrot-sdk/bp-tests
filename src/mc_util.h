@@ -70,8 +70,9 @@ void sync_barrier(volatile uint64_t *barrier_addr, uint64_t entry) {
 
 // secondary harts enter here
 uint64_t main(uint64_t argc, char * argv[]);
-void __main(void) {
+void __attribute__ ((noreturn)) __main(void) {
     main(0, NULL);
+    while(1);
 }
 
 #endif

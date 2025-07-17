@@ -11,8 +11,7 @@
  *
  *   Core 0 is the controlling core. At the end of execution, all cores synchronize
  *   using a barrier. Core 0 waits for all cores to synchronize then returns from
- *   main. All other cores call bp_finish() with argument of 0 as PASS, 1 as FAIL
- *   and then enter a busy-wait loop. Only core 0 calls return to avoid races between
+ *   main. All other cores enter a busy-wait loop. Only core 0 calls return to avoid races between
  *   multiple cores calling return.
  *
  *   MATRIX_SIZE defines the maximum size of the data matrix used in the test.
@@ -56,6 +55,10 @@ uint64_t thread_main(uint64_t core_id, uint32_t num_cores, uint32_t iterations) 
 
   return sum;
 }
+#include <bp_utils.h>
+#include <stdio.h>
+#include <stdlib.h>
+extern void *__libc_fini_array;
 
 uint64_t main(uint64_t argc, char * argv[]) {
   uint64_t core_id;
@@ -91,7 +94,6 @@ uint64_t main(uint64_t argc, char * argv[]) {
     return 0;
   } else {
     // all other cores call finish (0 = pass, 1 = fail) ...
-    bp_finish(0);
     // ... then busy-wait for core 0 to terminate the execution
     while (1) { }
   }

@@ -136,7 +136,6 @@ uint64_t main(uint64_t argc, char * argv[]) {
     while (end_barrier_mem != num_cores) { }
     return 0;
   } else {
-    bp_finish(0);
     while (1) { }
   }
 

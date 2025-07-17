@@ -38,7 +38,6 @@ uint64_t main(uint64_t argc, char * argv[]) {
     uint64_t total = num_cores * N;
     return (amo_target != total);
   } else {
-    bp_finish(0);
     while (1) { }
   }
 

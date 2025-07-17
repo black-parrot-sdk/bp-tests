@@ -5,6 +5,7 @@ WITH_MABI ?= lp64d
 include Makefile.frag
 
 RISCV_GCC           = $(CROSS_COMPILE)gcc
+RISCV_OBJDUMP       = $(CROSS_COMPILE)objdump
 RISCV_GPP           = $(CROSS_COMPILE)g++
 RISCV_GCC_OPTS      = -march=$(WITH_MARCH) -mabi=$(WITH_MABI) --specs=dramfs.specs --specs=perch.specs
 RISCV_LINK_OPTS     =
