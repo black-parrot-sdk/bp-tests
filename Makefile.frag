@@ -14,6 +14,7 @@ BP_TESTS_C = \
   eaddr_fault           \
   instr_fault_mtval     \
   instr_fault_stval     \
+  instret_smode         \
   paging                \
   mapping               \
   mstatus_fs            \
