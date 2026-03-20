@@ -13,6 +13,7 @@ BP_TESTS_C = \
   domain_fault          \
   eaddr_fault           \
   instr_fault_mtval     \
+  instr_fault_stval     \
   paging                \
   mapping               \
   mstatus_fs            \
