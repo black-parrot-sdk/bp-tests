@@ -12,6 +12,8 @@ BP_TESTS_C = \
   stream_hammer         \
   domain_fault          \
   eaddr_fault           \
+  instr_fault_mtval     \
+  instr_fault_stval     \
   paging                \
   mapping               \
   mstatus_fs            \
