@@ -15,6 +15,7 @@ BP_TESTS_C = \
   instr_fault_mtval     \
   instr_fault_stval     \
   instret_smode         \
+  instret_smode_deny    \
   paging                \
   mapping               \
   mstatus_fs            \
