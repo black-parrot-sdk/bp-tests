@@ -15,7 +15,7 @@ void m_trap_handler() {
 void s_mode_main() {
   uint64_t val;
   __asm__ __volatile__ ("csrr %0, instret" : "=r" (val));
-  __asm__ __volatile__ ("ecall");
+  __asm__ __volatile__ ("ecall"); 
   bp_finish(1);
 }
 
@@ -23,7 +23,7 @@ int main(uint64_t argc, char * argv[]) {
   // grant S-mode instret access via mcounteren.IR (bit 2)
   __asm__ __volatile__ ("csrw mcounteren, %0" : : "r" (1ULL << 2));
 
-  // set mtvec to M-mode trap handler
+    // set mtvec to M-mode trap handler
   __asm__ __volatile__ ("csrw mtvec, %0" : : "r" (&m_trap_handler));
 
   // mstatus.mpp = 01 (S-mode)
