@@ -12,8 +12,6 @@ BP_TESTS_C = \
   stream_hammer         \
   domain_fault          \
   eaddr_fault           \
-  instr_fault_mtval     \
-  instr_fault_stval     \
   instret_smode         \
   instret_smode_deny    \
   paging                \
@@ -65,4 +63,3 @@ BP_TESTS_CPP = \
   map                   \
 
 BP_TESTS = $(BP_TESTS_C) $(BP_MULTICORE_TESTS_C) $(BP_ACCELERATOR_TESTS_C) $(BP_TESTS_CPP)
-

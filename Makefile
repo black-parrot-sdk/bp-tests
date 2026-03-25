@@ -50,4 +50,3 @@ coherent_accelerator_vdp.riscv: coherent_accelerator_vdp.c vdp.c
 
 clean:
 	rm -f *.riscv
-
