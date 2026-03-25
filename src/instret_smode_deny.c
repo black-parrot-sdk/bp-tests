@@ -4,10 +4,12 @@
 #include <stdint.h>
 #include "bp_utils.h"
 
-void trap_handler() {
-  uint64_t scause;
-  __asm__ __volatile__ ("csrr %0, scause" : "=r" (scause));
-  if (scause != 2)
+void m_trap_handler() {
+  uint64_t mcause;
+  __asm__ __volatile__ ("csrr %0, mcause" : "=r" (mcause));
+
+  // Expected path: S-mode illegal instruction on instret read.
+  if (mcause != 2)
     bp_finish(1);
   bp_finish(0);
 }
@@ -15,12 +17,14 @@ void trap_handler() {
 void s_mode_main() {
   uint64_t val;
   __asm__ __volatile__ ("csrr %0, instret" : "=r" (val));
+  // If we get here, the instret read did not trap as expected.
+  __asm__ __volatile__ ("ecall");
   bp_finish(1);
 }
 
 int main(uint64_t argc, char * argv[]) {
   __asm__ __volatile__ ("csrw mcounteren, %0" : : "r" (0));
-  __asm__ __volatile__ ("csrw stvec, %0" : : "r" (&trap_handler));
+  __asm__ __volatile__ ("csrw mtvec, %0" : : "r" (&m_trap_handler));
 
   uint64_t mstatus;
   __asm__ __volatile__ ("csrr %0, mstatus" : "=r" (mstatus));

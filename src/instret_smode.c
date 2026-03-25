@@ -1,22 +1,30 @@
 #include <stdint.h>
 #include "bp_utils.h"
 
-void trap_handler() {
+void m_trap_handler() {
+  uint64_t mcause;
+  __asm__ __volatile__ ("csrr %0, mcause" : "=r" (mcause));
+
+  // Expected path: S-mode ecall after successful instret read.
+  if (mcause == 9)
+    bp_finish(0);
+
   bp_finish(1);
 }
 
 void s_mode_main() {
   uint64_t val;
   __asm__ __volatile__ ("csrr %0, instret" : "=r" (val));
-  bp_finish(0);
+  __asm__ __volatile__ ("ecall"); 
+  bp_finish(1);
 }
 
 int main(uint64_t argc, char * argv[]) {
   // grant S-mode instret access via mcounteren.IR (bit 2)
   __asm__ __volatile__ ("csrw mcounteren, %0" : : "r" (1ULL << 2));
 
-  // set stvec to trap_handler
-  __asm__ __volatile__ ("csrw stvec, %0" : : "r" (&trap_handler));
+    // set mtvec to M-mode trap handler
+  __asm__ __volatile__ ("csrw mtvec, %0" : : "r" (&m_trap_handler));
 
   // mstatus.mpp = 01 (S-mode)
   uint64_t mstatus;
