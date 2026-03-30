@@ -13,12 +13,16 @@ static inline void mmio_write64(uint64_t addr, uint64_t val) {
   *(volatile uint64_t *)addr = val;
 }
 
+static inline void mmio_write32(uint64_t addr, uint32_t val) {
+  *(volatile uint32_t *)addr = val;
+}
+
 static inline uint64_t mmio_read64(uint64_t addr) {
   return *(volatile uint64_t *)addr;
 }
 
-static inline void clint_set_msip(uint64_t val) {
-  mmio_write64(CLINT_BASE_ADDR + CLINT_MIPI_OFFSET, val);
+static inline void clint_set_msip(uint32_t val) {
+  mmio_write32(CLINT_BASE_ADDR + CLINT_MIPI_OFFSET, val);
 }
 
 static inline void clint_set_mtimecmp(uint64_t val) {
