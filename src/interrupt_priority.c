@@ -1,42 +1,7 @@
 // This test checks M-mode interrupt priority ordering using CLINT/PLIC MMIO.
 #include <stdint.h>
 #include "bp_utils.h"
-
-// CLINT/PLIC base and offsets (see bp_common_clint_pkgdef.svh)
-#define CLINT_BASE_ADDR        0x00300000ull
-#define CLINT_MIPI_OFFSET      0x0000ull
-#define CLINT_MTIMECMP_OFFSET  0x4000ull
-#define CLINT_MTIME_OFFSET     0xBFF8ull
-#define CLINT_PLIC_OFFSET      0xB000ull
-#define CLINT_PLIC_STRIDE      0x0008ull
-
-static inline void mmio_write64(uint64_t addr, uint64_t val) {
-  *(volatile uint64_t *)addr = val;
-}
-
-static inline void mmio_write32(uint64_t addr, uint32_t val) {
-  *(volatile uint32_t *)addr = val;
-}
-
-static inline uint64_t mmio_read64(uint64_t addr) {
-  return *(volatile uint64_t *)addr;
-}
-
-static inline void clint_set_msip(uint32_t val) {
-  mmio_write32(CLINT_BASE_ADDR + CLINT_MIPI_OFFSET, val);
-}
-
-static inline void clint_set_mtimecmp(uint64_t val) {
-  mmio_write64(CLINT_BASE_ADDR + CLINT_MTIMECMP_OFFSET, val);
-}
-
-static inline uint64_t clint_read_mtime(void) {
-  return mmio_read64(CLINT_BASE_ADDR + CLINT_MTIME_OFFSET);
-}
-
-static inline void clint_set_meip(uint64_t val) {
-  mmio_write64(CLINT_BASE_ADDR + CLINT_PLIC_OFFSET + (0 * CLINT_PLIC_STRIDE), val);
-}
+#include "interrupt_priority.h"
 
 volatile uint64_t step = 0;
 
@@ -113,11 +78,11 @@ int main(uint64_t argc, char * argv[]) {
   clint_set_meip(1);
   __asm__ __volatile__ ("fence iorw, iorw" : : : "memory");
 
-  // Enable global machine interrupts.
+  //// Enable global machine interrupts.
   mstatus |= (1ULL << 3);
   __asm__ __volatile__ ("csrw mstatus, %0" : : "r" (mstatus));
 
-  for (uint64_t i = 0; i < 1000000; i++) { }
+  for (uint64_t i = 0; i < 100; i++) { __asm__ __volatile__ ("nop"); }
 
   bp_finish(1);
 }
