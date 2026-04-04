@@ -33,6 +33,7 @@ BP_TESTS_C = \
   epc                   \
   fflags_haz            \
   dram_stress           \
+  high_dram_alias       \
   misaligned_ldst       \
   nanboxing             \
   misaligned_instructions_basic_jumps \
