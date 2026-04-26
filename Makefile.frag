@@ -35,6 +35,8 @@ BP_TESTS_C = \
   fp_precision          \
   fp_neg_zero_nanbox    \
   fp_signed_zero        \
+  pmp_csr_enabled       \
+  pmp_csr_disabled_illegal \
   l2_uncached           \
   l2_cache_ops
 
