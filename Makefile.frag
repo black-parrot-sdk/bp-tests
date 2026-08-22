@@ -46,6 +46,12 @@ BP_TESTS_C = \
   fp_signed_zero        \
   pmp_csr_enabled       \
   pmp_csr_disabled_illegal \
+  satp_u_mode           \
+  pmp_s_mode            \
+  mprv_u_page           \
+  cycle_write           \
+  gigapage_alignment    \
+  counteren_u_mode      \
   l2_uncached           \
   l2_cache_ops
 
