@@ -21,11 +21,19 @@ main:
     or t0, t0, t1
     csrw mstatus, t0
 
+    # MPRV must not affect instruction fetches. If it does, this jump faults
+    # because the test's code address is deliberately absent from the page table.
+    jal t2, instruction_probe
+
+    # MPRV must apply MPP=U to data accesses. The supervisor-only leaf must fault.
     li t0, 0x40000000
     ld t1, 0(t0)
     li t0, 1 << 17
     csrc mstatus, t0
     j fail
+
+instruction_probe:
+    jr t2
 
 .align 2
 trap:
