@@ -49,6 +49,7 @@ BP_TESTS_C = \
   satp_u_mode           \
   pmp_s_mode            \
   mprv_u_page           \
+  mprv_debug_page       \
   cycle_write           \
   gigapage_alignment    \
   pte_reserved          \
