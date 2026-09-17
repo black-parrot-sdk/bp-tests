@@ -57,7 +57,8 @@ BP_TESTS_C = \
   pte_valid_nonleaf     \
   counteren_u_mode      \
   l2_uncached           \
-  l2_cache_ops
+  l2_cache_ops          \
+  mstatus_legalization  \
 
 BP_MULTICORE_TESTS_C = \
   mc_sanity             \
