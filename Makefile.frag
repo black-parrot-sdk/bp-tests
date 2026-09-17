@@ -59,6 +59,7 @@ BP_TESTS_C = \
   l2_uncached           \
   l2_cache_ops          \
   mstatus_legalization  \
+  s_mideleg \
 
 BP_MULTICORE_TESTS_C = \
   mc_sanity             \
