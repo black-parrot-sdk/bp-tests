@@ -75,6 +75,8 @@ BP_TESTS_C = \
   tval_upper_bits       \
   jump_upper_bits       \
   xret_upper_bits       \
+  dcache_lrsc_hum       \
+  fflags_rd_x0          \
 
 BP_MULTICORE_TESTS_C = \
   mc_sanity             \
