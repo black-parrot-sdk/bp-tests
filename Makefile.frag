@@ -32,6 +32,7 @@ BP_TESTS_C = \
   aviary_rom            \
   readonly              \
   epc                   \
+  scause_code_width     \
   fflags_haz            \
   dram_stress           \
   high_dram_alias       \
