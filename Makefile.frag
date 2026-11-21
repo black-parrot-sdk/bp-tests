@@ -56,6 +56,7 @@ BP_TESTS_C = \
   cycle_write           \
   gigapage_alignment    \
   pte_ppn_oob           \
+  cbo_perm              \
   pte_reserved          \
   pte_valid_nonleaf     \
   counteren_u_mode      \
