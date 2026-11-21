@@ -18,7 +18,9 @@
     .equ LEAF_R,    0x43            # V|R|A           read-only
     .equ LEAF_RW,   0x47            # V|R|W|A         writable, D=0
     .equ LEAF_RWD,  0xC7            # V|R|W|A|D
-    .equ LEAF_U,    0xD7            # V|R|W|U|A|D     user page, SUM=0
+    .equ LEAF_U,    0xD7            # V|R|W|U|A|D     user page
+    .equ LEAF_X,    0x49            # V|X|A           execute-only
+    .equ LEAF_NOA,  0x87            # V|R|W|D        accessed bit clear
 
     # expect no trap
     .macro NOTRAP num
@@ -50,15 +52,15 @@
     li      a1, \va
     EXPECT  \num, 15, \va
     cbo.clean (a1)
-    j       fail
+    j       report
 1:
     EXPECT  \num+1, 15, \va
     cbo.flush (a1)
-    j       fail
+    j       report
 1:
     EXPECT  \num+2, 15, \va
     cbo.inval (a1)
-    j       fail
+    j       report
 1:
     .endm
 
@@ -89,7 +91,8 @@ _start:
     ori     t0, t0, 1
     sd      t0, 0(t1)
 
-    # L0: VA 0x0000 R, 0x1000 RW D=0, 0x2000 RWD, 0x3000 invalid, 0x4000 U
+    # L0: VA 0x0000 R, 0x1000 RW D=0, 0x2000 RWD, 0x3000 invalid, 0x4000 U,
+    #     0x5000 X only, 0x6000 A=0
     la      t1, pt_l0
     la      t2, data_page
     srli    t2, t2, 12
@@ -103,6 +106,10 @@ _start:
     sd      zero, 24(t1)
     ori     t0, t2, LEAF_U
     sd      t0, 32(t1)
+    ori     t0, t2, LEAF_X
+    sd      t0, 40(t1)
+    ori     t0, t2, LEAF_NOA
+    sd      t0, 48(t1)
 
     la      t0, pt_root
     srli    t0, t0, 12
@@ -156,7 +163,7 @@ s_main:
     li      a1, 0x0000
     EXPECT  61, 15, 0x0000
     cbo.zero (a1)
-    j       fail
+    j       report
 1:
     # 62: and on a TLB hit (installed by a load)
     sfence.vma
@@ -164,11 +171,48 @@ s_main:
     ld      a0, 0(a1)
     EXPECT  62, 15, 0x0000
     cbo.zero (a1)
-    j       fail
+    j       report
+1:
+    # 70..: execute-only leaf: with MXR=0 no load is permitted, with MXR=1 it is
+    # (execute-only with MXR=0 is UNSPECIFIED in the spec; BlackParrot faults)
+    sfence.vma
+    CBO_FAULT 70, 0x5000
+    li      t0, 1 << 19             # sstatus.MXR
+    csrs    sstatus, t0
+    sfence.vma
+    CBO_OK  73, 0x5000
+    li      t0, 1 << 19
+    csrc    sstatus, t0
+    # the entry is now in the TLB: it must fault there too, without a walk
+    CBO_FAULT 76, 0x5000
+
+    # 80..: user page is accessible with SUM=1
+    li      t0, 1 << 18             # sstatus.SUM
+    csrs    sstatus, t0
+    sfence.vma
+    CBO_OK  80, 0x4000
+    li      t0, 1 << 18
+    csrc    sstatus, t0
+
+    # 90..: accessed bit clear faults (BlackParrot does not set A)
+    sfence.vma
+    CBO_FAULT 90, 0x6000
+
+    # 100: cbo.zero on a writable leaf with D=0 follows the store rules,
+    # same as a store (101): BlackParrot raises a store page fault
+    sfence.vma
+    li      a1, 0x1000
+    EXPECT  100, 15, 0x1000
+    cbo.zero (a1)
+    j       report
+1:
+    EXPECT  101, 15, 0x1000
+    sd      zero, 0(a1)
+    j       report
 1:
     li      s7, 0                   # PASS
-fail:
-    ecall                           # S-mode ecall reports s7 to the handler
+report:                             # s7 = 0 (PASS) or the failing case
+    ecall                           # S-mode ecall: the handler writes s7 to the host
 
     .align 2
 trap_handler:
