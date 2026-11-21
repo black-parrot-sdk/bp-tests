@@ -51,7 +51,7 @@ streaming_accelerator_zipline.riscv: streaming_accelerator_zipline.c vdp.c
 coherent_accelerator_vdp.riscv: coherent_accelerator_vdp.c vdp.c
 	$(RISCV_GCC) -o $@ $^ $(RISCV_GCC_OPTS) $(RISCV_LINK_OPTS)
 
-misaligned_fault.riscv: %.riscv: %.S
+misaligned_fault.riscv pte_ppn_oob.riscv: %.riscv: %.S
 	$(RISCV_GCC) -o $@ $^ -march=rv64imafd_zicsr -mabi=lp64d -mcmodel=medany -nostdlib -nostartfiles -Wl,--no-relax -Tsrc/misaligned_fault.ld
 
 clean:

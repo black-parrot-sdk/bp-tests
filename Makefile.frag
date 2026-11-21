@@ -55,6 +55,7 @@ BP_TESTS_C = \
   mprv_debug_page       \
   cycle_write           \
   gigapage_alignment    \
+  pte_ppn_oob           \
   pte_reserved          \
   pte_valid_nonleaf     \
   counteren_u_mode      \
