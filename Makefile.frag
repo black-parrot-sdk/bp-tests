@@ -81,6 +81,7 @@ BP_TESTS_C = \
   dcache_lrsc_hum       \
   fflags_rd_x0          \
   icache_redirect_stale \
+  mem_fault_fuzz        \
 
 BP_MULTICORE_TESTS_C = \
   mc_sanity             \
