@@ -54,5 +54,8 @@ coherent_accelerator_vdp.riscv: coherent_accelerator_vdp.c vdp.c
 misaligned_fault.riscv icache_redirect_stale.riscv pte_ppn_oob.riscv: %.riscv: %.S
 	$(RISCV_GCC) -o $@ $^ -march=rv64imafd_zicsr -mabi=lp64d -mcmodel=medany -nostdlib -nostartfiles -Wl,--no-relax -Tsrc/misaligned_fault.ld
 
+cbo_perm.riscv: %.riscv: %.S
+	$(RISCV_GCC) -o $@ $^ -march=rv64imafd_zicsr_zicbom_zicboz -mabi=lp64d -mcmodel=medany -nostdlib -nostartfiles -Wl,--no-relax -Tsrc/misaligned_fault.ld
+
 clean:
 	rm -f *.riscv
